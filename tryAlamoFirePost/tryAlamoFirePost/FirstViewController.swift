@@ -5,7 +5,7 @@
 //  Created by Lila Kelland on 2020-07-09.
 //  Copyright © 2020 Lila Kelland. All rights reserved.
 //
-//  Grabs user coooking temp and time parameters, displays placeholders from values stored on server
+//  Grabs user coooking parameters (temp limits and timer duration), displays placeholders from values stored on server
 
 import UIKit
 import Alamofire

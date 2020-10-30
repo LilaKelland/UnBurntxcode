@@ -28,6 +28,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
          print("Push notification received in foreground.")
          completionHandler([.alert, .sound, .badge])
     }
+    
+//    func userNotificationCenter(_ center: UNUserNotificationCenter,
+//                                didReceive response: UNNotificationResponse,
+//                                withCompletionHandler completionHandler: @escaping () -> Void) {
+//        if response.notification.request.content.categoryIdentifier == "TIMER_EXPIRED" {
+//            // Handle the actions for the expired timer.
+//            if response.actionIdentifier == "SNOOZE_ACTION" {
+//                // Invalidate the old timer and create a new one. . .
+//            }
+//            else if response.actionIdentifier == "STOP_ACTION" {
+//                // Invalidate the timer. . .
+//            }
+//        }
+//
+        // Else handle actions for other notification types. . .
+//    }
+
 
     // MARK: UISceneSession Lifecycle
 
@@ -70,7 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let parameters = [
                 "tokenString": tokenString,
                 ]
-            AF.request("http://174.116.37.210:8080/setToken", method: .get, parameters: parameters)
+        AF.request("\(Environment.url_string)/setToken", method: .get, parameters: parameters)
                 .validate()
                .responseString
                 { response in

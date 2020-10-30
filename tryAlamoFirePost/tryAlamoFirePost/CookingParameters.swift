@@ -1,9 +1,11 @@
 //
 //  CookingParameters.swift
-//  UnBurnt
+//  UnBurnt ios app
 //
 //  Created by Lila Kelland on 2020-08-21.
 //  Copyright © 2020 Lila Kelland. All rights reserved.
+
+// push and gets cooking parameters (cooking timer, high temp and low temp) to and from server
 //
  // top level vars  = state
 // func = behaviour
@@ -124,7 +126,7 @@ class CookingParameters {
         }
      }
 
-// Push parameters to server and set state?
+// Push parameters to server
     func pushCookingParametersToServer(lowTempLimit: String, highTempLimit: String, checkTime: String) throws  {
         
         let parameters = [
@@ -134,7 +136,7 @@ class CookingParameters {
             ]
         
        // getCookingParameters(lowTempInput: String, highTempInput: String, checkTimeInput: String)
-        AF.request("http://192.168.7.87:8080/cookingParameters", method: .get, parameters: parameters)
+        AF.request("\(Environment.url_string)/cookingParameters", method: .get, parameters: parameters)
            .validate()
           .responseString {
             response in
@@ -150,11 +152,10 @@ class CookingParameters {
     }
 
 // Read each parameter from server
-    
     func getLowTempCookingParameter() -> String  {
         var finishLoad: Bool = false
         var counter: Int = 0
-        AF.request("http://192.168.7.87:8080/getDefaultConfig").responseData { response in
+        AF.request("\(Environment.url_string)/getDefaultConfig").responseData { response in
                 switch response.result {
                     case .failure(let error):
                         print(error)
@@ -184,7 +185,7 @@ class CookingParameters {
     func getHighTempCookingParameter() -> String {
         var finishLoad: Bool = false
         var counter: Int = 0
-        AF.request("http://192.168.7.87:8080/getDefaultConfig").responseData { response in
+        AF.request("\(Environment.url_string)/getDefaultConfig").responseData { response in
                 switch response.result {
                     case .failure(let error):
                         print(error)
@@ -216,7 +217,7 @@ class CookingParameters {
         var finishLoad: Bool
             = false
         var counter: Int = 0
-        AF.request("http://192.168.7.87:8080/getDefaultConfig").responseData { response in
+        AF.request("\(Environment.url_string)/getDefaultConfig").responseData { response in
                 switch response.result {
                     case .failure(let error):
                         print(error)

@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -263,6 +263,8 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Temp/Time" image="gauge" catalog="system" id="cPa-gy-q4n"/>
                     <connections>
+                        <outlet property="StackViewBkg" destination="9Ci-gD-GYf" id="wDo-4j-PFf"/>
+                        <outlet property="TempTimeView" destination="QS5-Rx-YEW" id="N7A-Sp-54B"/>
                         <outlet property="tempTimestamp" destination="pXy-Uh-shy" id="8fd-pV-cb6"/>
                         <outlet property="timeElapsed" destination="1Ik-mg-tII" id="aLo-oC-mXv"/>
                         <outlet property="timerCountdown" destination="1yL-tu-GCH" id="zG6-gL-mkQ"/>

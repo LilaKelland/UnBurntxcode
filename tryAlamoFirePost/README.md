@@ -13,7 +13,7 @@ Next steps:
 - change original file structure so no longer named "TryAlamoFirePost"
 - swap names of Second and First View controllers as they appear in opposite order
 
-![Launch Screen Image]("LaunchScreen.png")
-![Second View Controller Image]("SecondViewController.png")
-![First View Controller Image]("FirstViewController.png")
-![Third View Controller Image]("ThirdViewController.png")
+![Launch Screen Image](LaunchScreen.png)
+![Second View Controller Image](SecondViewController.png)
+![First View Controller Image](FirstViewController.png)
+![Third View Controller Image](ThirdViewController.png)

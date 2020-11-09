@@ -128,15 +128,8 @@ class FirstViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //getDefaults
-        cookingParameters.getLowTempCookingParameter()
-        cookingParameters.getHighTempCookingParameter()
-        cookingParameters.getCheckTimeCookingParameter()
-        
         updatePlaceholders()
-        
         self.hideKeyboardWhenTappedAround()
-        
         runUpdates()
     }
 }

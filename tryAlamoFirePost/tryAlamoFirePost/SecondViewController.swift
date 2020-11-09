@@ -5,12 +5,11 @@
 //  Created by Lila Kelland on 2020-07-09.
 //  Copyright © 2020 Lila Kelland. All rights reserved.
 //
-//  Displays temperatures (left and right side) and times (since last read from server, and time to next check) on screen
-//  Also displays fire when flame sensor tiggered
-//  Temperatures change colour when cooking state changes (cold - blue when < lowTempLimit, cooking - orange when > lowTempLimit & < highTempLimit and cooking - too hot - red when < highTempLimit
-//  Temperatures change to grey if there is something flaky with thermocouple and using other sides thermocouple to estimate temp (not valid temperature) ****** maybe change this so doesn't display (n/a)?
-//  used guage from:
-// https://www.hackingwithswift.com/articles/150/how-to-create-a-custom-gauge-control-using-uikit
+//  Displays temperatures (left and right side) and times (since last read from server, and time to next BBQ check)
+//  Temperatures change colour with cooking state - dial background turns red if presumed on fire
+//  If there is something flaky with thermocouple will display greyed out "N/A" (but for any calculations will use other thermocouple's value)
+//  Used guage from:
+//https://www.hackingwithswift.com/articles/150/how-to-create-a-custom-gauge-control-using-uikit
 
 import UIKit
 import Alamofire
@@ -18,11 +17,11 @@ import SwiftyJSON
 import SwiftUI
 
 struct WebData:Decodable{
-    let tempf1: Double
-    let tempf2: Double
+    let tempf1: Int
+    let tempf2: Int
     let is_tempf1_valid: Bool
     let is_tempf2_valid: Bool
-    let timeElapse: String
+    let timeElapsed: String
     let checkTimer: String
     let timeStamp: String
 }
@@ -31,7 +30,8 @@ struct StateData:Decodable{
     let state: String
 }
 
-//------------------------------------------------------------------------------------------------------not my code below
+//-------------------code below (between"-----") only very slightly modified from indicated refrerence
+
 class GaugeView: UIView{
     //https://www.hackingwithswift.com/articles/150/how-to-create-a-custom-gauge-control-using-uikit
     var outerBezelColor = UIColor.darkGray//(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
@@ -43,7 +43,6 @@ class GaugeView: UIView{
     var insideColor = UIColor.systemGray4
     
     var segmentWidth: CGFloat = 20
-    //222, 206, 33
     var segmentColors = [UIColor(red: 0, green: 1, blue: 1, alpha: 0.2), UIColor(red: 0, green: 1, blue: 0, alpha: 0.25), UIColor(red: 0, green: 1, blue: 0, alpha: 0.25), UIColor(red: 0, green: 1, blue: 0, alpha: 0.25), UIColor(red: 1, green: 0, blue: 0, alpha: 0.25)]
     
     //8 and 4
@@ -70,7 +69,7 @@ class GaugeView: UIView{
     
     let valueLabelL = UILabel()
     let valueLabelR = UILabel()
-    var valueFont = UIFont.systemFont(ofSize: 30) // --------------was 35
+    var valueFont = UIFont.systemFont(ofSize: 30)
 
     
     func drawBackground(in rect: CGRect, context ctx: CGContext) {
@@ -220,7 +219,8 @@ class GaugeView: UIView{
         // now center the needle over our center point
         needle.center = CGPoint(x: bounds.midX, y: bounds.midY)
         addSubview(needle)
-    //---------------------------------------------------------------------------------------------------not my code above
+    //--------------------------------------------------------------------------------------------------
+    // below to next "-------" still from reference but I've modified below
         
         valueLabelL.font = valueFont
         valueLabelR.font = valueFont
@@ -232,26 +232,39 @@ class GaugeView: UIView{
         addSubview(valueLabelR)
 
         NSLayoutConstraint.activate([
-        //------------------------------------------------- move label??
-//            valueLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-//            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+
             valueLabelL.centerXAnchor.constraint(equalTo: centerXAnchor, constant: -30),
             valueLabelL.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -23),
             valueLabelR.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 33),
             valueLabelR.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -23)
         ])
     }
-    //var valueL: Double = 0
-    var valueR: Double = 0
-  //-------------------------------------??
-    var valueL: Double = 0 {
+    
+    var tempf1Valid: Bool = false
+    var tempf2Valid: Bool = false
+
+    var valueL: Int = 0 {
         didSet {
             // update the value label to show the exact number
-            valueLabelL.text = String(format: "%.0f", valueL)
-            valueLabelR.text =  String(format: "%.0f", valueR)
-
-            // figure out where the needle is, between 0 and 1
-            let needlePosition = CGFloat((valueL + valueR)/2) / 800
+            if self.tempf1Valid == true {
+                valueLabelL.text = String(valueL)
+            } else {
+                valueLabelL.text = "N/A"
+            }
+        }
+    }
+    
+    var valueR: Int = 0 {
+        didSet {
+            // update the value label to show the exact number
+            var needlePosition: CGFloat = 0
+            if self.tempf2Valid == true {
+                valueLabelR.text = String(valueR)
+                needlePosition =  CGFloat(valueR / 800)
+            } else {
+                valueLabelR.text = "N/A"
+                needlePosition =  CGFloat(valueL / 800)
+            }
 
             // create a lerp from the start angle (rotation) through to the end angle (rotation + totalAngle)
             let lerpFrom = rotation
@@ -262,19 +275,19 @@ class GaugeView: UIView{
             needle.transform = CGAffineTransform(rotationAngle: deg2rad(needleRotation))
         }
     }
-    override init(frame: CGRect) { //----------------------add inside colour here
+  
+    override init(frame: CGRect) {
         super.init(frame: frame)
         setUp()
     }
-//    init(insideColor:UIColor) { //------------------------------------------------------------
-//        self.insideColor = UIColor.systemGray4
-//    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setUp()
     }
 }
+//-------------------------------------------------------------------------------- from reference above
+
 
 class SecondViewController: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -284,29 +297,54 @@ class SecondViewController: UIViewController {
             super.init(coder: coder)
     }
 
-   // @IBOutlet weak var currentTemp: UILabel!
     @IBOutlet weak var timeElapsed: UILabel!
     @IBOutlet weak var timerCountdown: UILabel!
     @IBOutlet weak var tempTimestamp: UILabel!
-    @IBOutlet weak var StackViewBkg: UIStackView!
-    @IBOutlet var TempTimeView: UIView!
+    @IBOutlet weak var StackViewBkg: UIStackView! // determine how to get rid of this
+    @IBOutlet var TempTimeView: UIView! // ditto
     
-    var test: GaugeView!
+    var gaugeView: GaugeView!
     var timer = Timer()
     var tempf1Valid: Bool = true
     var tempf2Valid: Bool = true
+    var timeElapsedInSeconds: Int = 0
+    var timerCountdownInSeconds: Int = 0
+    var counter: Int = 6
 
     func runUpdates() {
-         timer = Timer.scheduledTimer(timeInterval: 2, target: self,   selector: (#selector(SecondViewController.updateDisplay)), userInfo: nil, repeats: true)
+         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(SecondViewController.updateDisplay)), userInfo: nil, repeats: true)
+
     }
     
     @objc func updateDisplay() {
         getData()
     }
-        
-    func getData() {
-        getTempTime()
-        getCookingState()
+    
+    func timeString(time:TimeInterval) -> String {
+        let hours = Int(time) / 3600
+        let minutes = Int(time) / 60 % 60
+        let seconds = Int(time) % 60
+        return (String(format: "%02d:%02d:%02d", hours, minutes, seconds))
+    }
+    
+    func getData() { ///still a bit funny - need to stop slight delay when checking server for updates, and subsequent jump forward to catch up
+        if ((self.tempf1Valid == false) && (self.tempf2Valid == false)){
+            print("sensor lost")
+//            self.timeElapsed.text = "sensor connection lost"
+//            self.timerCountdown.text = "sensor connection lost"
+            counter = 7
+        }
+        if counter < 6 {
+            self.counter += 1
+            self.timeElapsedInSeconds += 1
+            self.timerCountdownInSeconds -= 1
+            self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
+            self.timerCountdown.text = self.timeString(time: TimeInterval(self.timerCountdownInSeconds))
+        } else {
+            self.counter = 0
+            getTempTime()
+            getCookingState()
+        }
     }
     
     func getTempTime() {
@@ -319,23 +357,42 @@ class SecondViewController: UIViewController {
                         let webData = try JSONDecoder().decode(WebData.self, from: data)
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                     UIView.animate(withDuration: 1) {
-                                        self.test.valueL = (webData.tempf1)
-                                        self.test.valueR = (webData.tempf2)
+                                        self.gaugeView.valueL = (webData.tempf1)
+                                        print(webData.tempf1)
+                                        self.gaugeView.valueR = (webData.tempf2)
+                                        print(webData.tempf2)
                                     }
                                 }
+                        if webData.timeElapsed.isInt == false {
+                            self.timeElapsed.text = webData.timeElapsed
+                        } else if Int(webData.timeElapsed)! >= self.timeElapsedInSeconds {
+                            self.timeElapsedInSeconds = Int(webData.timeElapsed)!
+                            self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
+                        }
                         
-                        self.timeElapsed.text = (webData.timeElapse)
-                        self.timerCountdown.text = (webData.checkTimer)
+                        if webData.checkTimer.isInt == false {
+                            self.timerCountdown.text = webData.checkTimer//"its broken ios taking over"//
+                        } else if Int(webData.checkTimer)! >= self.timerCountdownInSeconds {
+                            self.timerCountdownInSeconds = Int(webData.checkTimer)!
+                            self.timerCountdown.text = self.timeString(time: TimeInterval(self.timerCountdownInSeconds))
+                        }
+                        
                         self.tempTimestamp.text = (webData.timeStamp)
-                        if (webData.is_tempf1_valid) == true{
+
+                        if webData.is_tempf1_valid == true {
                             self.tempf1Valid = true
+                            self.gaugeView.tempf1Valid = true
                         } else {
                             self.tempf1Valid = false
+                            self.gaugeView.tempf1Valid = false
                         }
-                        if (webData.is_tempf2_valid) == true{
+                        
+                        if webData.is_tempf2_valid == true {
                             self.tempf2Valid = true
+                            self.gaugeView.tempf2Valid = true
                         } else {
-                            self.tempf2Valid = false
+                            self.tempf2Valid =  false
+                            self.gaugeView.tempf2Valid = false
                         }
                 } catch let error {
                     print(error)
@@ -344,6 +401,7 @@ class SecondViewController: UIViewController {
         }
     }
     
+//  sets UI colours based on cooking state and whether or not sensor is actually working
     func getCookingState(){
          AF.request("\(Environment.url_string)/getState").responseData
             { response in
@@ -353,83 +411,62 @@ class SecondViewController: UIViewController {
                  case .success(let sdata):
                      do {
                         let stateData = try JSONDecoder().decode(StateData.self, from: sdata)
-                       
+                        var label1color: UIColor = UIColor.systemBlue
+                        var label2color: UIColor = UIColor.systemBlue
+                        var insideGuageColor: UIColor = UIColor.systemGray4
+                        
                         if stateData.state == "cold" {
-                            self.test.valueLabelL.textColor = UIColor.systemBlue
-                            self.test.valueLabelR.textColor = UIColor.systemBlue
-                            self.test.insideColor = UIColor.systemGray4
-                            self.test.setNeedsDisplay()
+                            label1color = UIColor.systemBlue
+                            label2color = UIColor.systemBlue
+                            insideGuageColor = UIColor.systemGray4
                             
                         } else if stateData.state == "cooking" {
-                            self.test.valueLabelL.textColor = UIColor.systemOrange
-                            self.test.valueLabelR.textColor = UIColor.systemOrange
-                            self.test.insideColor = UIColor.systemGray4
-                            self.test.setNeedsDisplay()
-                            
+                            label1color = UIColor.systemOrange
+                            label2color = UIColor.systemOrange
+                            insideGuageColor = UIColor.systemGray4
+                   
                         } else if stateData.state == "burning" {
-                            self.test.valueLabelL.textColor = .darkGray
-                            self.test.valueLabelR.textColor = .darkGray
-                            self.test.insideColor = UIColor.systemRed
-                            self.test.setNeedsDisplay()
+                            label1color = .darkGray
+                            label2color = .darkGray
+                            insideGuageColor = UIColor.systemRed
                         }
-                        
                         if self.tempf1Valid == false {
-                            self.test.valueLabelL.textColor = UIColor.systemGray
+                            label1color = UIColor.systemGray
+                 
                         }
                         if self.tempf2Valid == false {
-                            self.test.valueLabelL.textColor = UIColor.systemGray
+                            label2color = UIColor.systemGray
                         }
+                    
+                        self.gaugeView.valueLabelL.textColor = label1color
+                        self.gaugeView.valueLabelR.textColor = label2color
+                        self.gaugeView.insideColor = insideGuageColor
+                        self.gaugeView.setNeedsDisplay()
+                    
                      } catch let error {
                         print(error)
                     }
             }
         }
     }
-    
+
     func subscribeToNotifications() {
             let userNotificationCenter = UNUserNotificationCenter.current()
-            userNotificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
+        userNotificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
                 print("Permission granted: \(granted)")
             }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            self.test = GaugeView(frame: CGRect(x: 65, y: 40, width: 256, height: 256))
-            test.backgroundColor = .systemGray2
-           
-        
-            self.view.addSubview(test)
-        
+            self.gaugeView = GaugeView(frame: CGRect(x: 65, y: 40, width: 256, height: 256))
+            self.gaugeView.backgroundColor = .systemGray2
+            self.view.addSubview(gaugeView)
 
-            let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes(_:)))
-            let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes(_:)))
-            
-            leftSwipe.direction = .left
-            rightSwipe.direction = .right
-
-            view.addGestureRecognizer(leftSwipe)
-            view.addGestureRecognizer(rightSwipe)
-        
             subscribeToNotifications()
-        
-        runUpdates()
+            runUpdates()
     }
     
-    @objc func handleSwipes(_ sender: UISwipeGestureRecognizer)
-    {
-        if sender.direction == .left
-        {
-           print("Swipe left")
-           // show the view from the right side
-        }
-
-        if sender.direction == .right
-        {
-           print("Swipe right")
-           // show the view from the left side
-        }
-    }
 }
 
 

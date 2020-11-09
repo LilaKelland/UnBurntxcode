@@ -6,6 +6,7 @@
 //  Copyright © 2020 Lila Kelland. All rights reserved.
 //
 // Displays temp over time chart with lowTempLimit, highTempLimit, tempf1 and tempf2.  If the sensor is invalid, line will turn grey.
+// Main chart set up code based from a tutorial - will find reference
 
 import UIKit
 import Charts
@@ -151,32 +152,8 @@ class ThirdViewController: UIViewController, ChartViewDelegate {
         lineChartView.width(to: view)
         lineChartView.heightToWidth(of: view)
         
-//        let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes(_:)))
-//        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes(_:)))
-//
-//        leftSwipe.direction = .left
-//        rightSwipe.direction = .right
-//
-//        view.addGestureRecognizer(leftSwipe)
-//        view.addGestureRecognizer(rightSwipe)
-        
         runUpdates()
     }
-    
-//    @objc func handleSwipes(_ sender: UISwipeGestureRecognizer)
-//    {
-//        if sender.direction == .left
-//        {
-//           print("Swipe left")
-//           // show the view from the right side
-//        }
-//
-//        if sender.direction == .right
-//        {
-//           print("Swipe right")
-//           // show the view from the left side
-//        }
-//    }
 
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
         print(entry)
@@ -186,12 +163,12 @@ class ThirdViewController: UIViewController, ChartViewDelegate {
         // Sets data points and characteristics of chart
         
         var allLineChartDataSets: [LineChartDataSet] = [LineChartDataSet]()
-        let tempDataSet = LineChartDataSet(entries: yvaluesp , label: "Left BBQ Temperatures F / Time (s)")
+        let tempDataSet1 = LineChartDataSet(entries: yvaluesp , label: "Left BBQ Temperatures F / Time (s)")
         let tempDataSet2 = LineChartDataSet(entries: yvaluesp , label: "Right BBQ Temperatures F / Time (s)")
         let lowTemp = LineChartDataSet(entries: lowTempValues , label: "Low Temperature Cooking Limit \(cookingParameters.goldLowTempLimit ?? "70")")
         let highTemp = LineChartDataSet(entries: highTempValues , label: "High Temperature Cooking Limit \(cookingParameters.goldHighTempLimit ?? "400")")
         
-        allLineChartDataSets.append(tempDataSet)
+        allLineChartDataSets.append(tempDataSet1)
         allLineChartDataSets.append(tempDataSet2)
         allLineChartDataSets.append(highTemp)
         allLineChartDataSets.append(lowTemp)
@@ -202,19 +179,19 @@ class ThirdViewController: UIViewController, ChartViewDelegate {
         let gradient = CGGradient.init(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: gradientColors, locations: colorLocations) // Gradient Object
         
         //Set left temperature curve characteristics
-        tempDataSet.fill = Fill.fillWithLinearGradient(gradient!, angle: 90.0)
-        tempDataSet.drawFilledEnabled = true // Draw the Gradient
-        tempDataSet.mode = .cubicBezier
-        tempDataSet.drawCirclesEnabled = false
-        tempDataSet.valueFont = .boldSystemFont(ofSize: 12)
-        tempDataSet.valueTextColor = .white
-        tempDataSet.lineWidth = 2
-        tempDataSet.setColor(.red)
-        tempDataSet.fillAlpha = 0.8
-        tempDataSet.drawFilledEnabled = true
-        tempDataSet.drawValuesEnabled = false
-        tempDataSet.drawHorizontalHighlightIndicatorEnabled = false
-        tempDataSet.highlightColor = .systemRed
+        tempDataSet1.fill = Fill.fillWithLinearGradient(gradient!, angle: 90.0)
+        tempDataSet1.drawFilledEnabled = true // Draw the Gradient
+        tempDataSet1.mode = .cubicBezier
+        tempDataSet1.drawCirclesEnabled = false
+        tempDataSet1.valueFont = .boldSystemFont(ofSize: 12)
+        tempDataSet1.valueTextColor = .white
+        tempDataSet1.lineWidth = 2
+        tempDataSet1.setColor(.red)
+        tempDataSet1.fillAlpha = 0.8
+        tempDataSet1.drawFilledEnabled = true
+        tempDataSet1.drawValuesEnabled = false
+        tempDataSet1.drawHorizontalHighlightIndicatorEnabled = false
+        tempDataSet1.highlightColor = .systemRed
         
         //Set righttemperature curve characteristics
         tempDataSet2.fill = Fill.fillWithLinearGradient(gradient!, angle: 90.0)

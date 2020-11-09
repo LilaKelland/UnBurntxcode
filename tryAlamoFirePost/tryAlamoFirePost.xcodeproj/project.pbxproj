@@ -12,6 +12,9 @@
 		B977A02A2530A01A001C3031 /* fire.aiff in Resources */ = {isa = PBXBuildFile; fileRef = B977A0292530A019001C3031 /* fire.aiff */; };
 		B977A03425388253001C3031 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B977A03325388253001C3031 /* Environment.swift */; };
 		B99682B024F00C61006B232A /* CookingParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99682AF24F00C61006B232A /* CookingParameters.swift */; };
+		B9A27C772553194200B95D35 /* too_hot.aiff in Resources */ = {isa = PBXBuildFile; fileRef = B9A27C742553194200B95D35 /* too_hot.aiff */; };
+		B9A27C782553194200B95D35 /* radar_timer.aiff in Resources */ = {isa = PBXBuildFile; fileRef = B9A27C752553194200B95D35 /* radar_timer.aiff */; };
+		B9A27C792553194200B95D35 /* too_cold.aiff in Resources */ = {isa = PBXBuildFile; fileRef = B9A27C762553194200B95D35 /* too_cold.aiff */; };
 		B9E863E724B75A9F00ADB7CB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E863E624B75A9F00ADB7CB /* AppDelegate.swift */; };
 		B9E863E924B75A9F00ADB7CB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E863E824B75A9F00ADB7CB /* SceneDelegate.swift */; };
 		B9E863EB24B75A9F00ADB7CB /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E863EA24B75A9F00ADB7CB /* FirstViewController.swift */; };
@@ -27,12 +30,11 @@
 		AD8CF808B64F477548DF5DC4 /* Pods-tryAlamoFirePost.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tryAlamoFirePost.debug.xcconfig"; path = "Target Support Files/Pods-tryAlamoFirePost/Pods-tryAlamoFirePost.debug.xcconfig"; sourceTree = "<group>"; };
 		B9021B3824C1F0D60067A2B9 /* ThirdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdViewController.swift; sourceTree = "<group>"; };
 		B977A0292530A019001C3031 /* fire.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = fire.aiff; sourceTree = "<group>"; };
-		B977A02D2530A0F4001C3031 /* fire.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = fire.m4a; sourceTree = "<group>"; };
 		B977A03325388253001C3031 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
-		B977A03925431B9E001C3031 /* radar_timer.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = radar_timer.aif; sourceTree = "<group>"; };
-		B977A03A25431BAA001C3031 /* too_cold.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = too_cold.aif; sourceTree = "<group>"; };
-		B977A03B25431BB3001C3031 /* too_hot.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = too_hot.aif; sourceTree = "<group>"; };
 		B99682AF24F00C61006B232A /* CookingParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingParameters.swift; sourceTree = "<group>"; };
+		B9A27C742553194200B95D35 /* too_hot.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = too_hot.aiff; sourceTree = "<group>"; };
+		B9A27C752553194200B95D35 /* radar_timer.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = radar_timer.aiff; sourceTree = "<group>"; };
+		B9A27C762553194200B95D35 /* too_cold.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = too_cold.aiff; sourceTree = "<group>"; };
 		B9E863E324B75A9F00ADB7CB /* UnBurnt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnBurnt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E863E624B75A9F00ADB7CB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B9E863E824B75A9F00ADB7CB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -86,17 +88,16 @@
 				B977A03325388253001C3031 /* Environment.swift */,
 				B9E863E824B75A9F00ADB7CB /* SceneDelegate.swift */,
 				B99682AF24F00C61006B232A /* CookingParameters.swift */,
-				B9E863EA24B75A9F00ADB7CB /* FirstViewController.swift */,
-				B977A0292530A019001C3031 /* fire.aiff */,
-				B977A02D2530A0F4001C3031 /* fire.m4a */,
+				B9E863F324B75AA100ADB7CB /* LaunchScreen.storyboard */,
 				B9E863EC24B75A9F00ADB7CB /* SecondViewController.swift */,
-				B977A03925431B9E001C3031 /* radar_timer.aif */,
-				B977A03A25431BAA001C3031 /* too_cold.aif */,
-				B977A03B25431BB3001C3031 /* too_hot.aif */,
+				B9E863EA24B75A9F00ADB7CB /* FirstViewController.swift */,
 				B9021B3824C1F0D60067A2B9 /* ThirdViewController.swift */,
 				B9E863EE24B75A9F00ADB7CB /* Main.storyboard */,
 				B9E863F124B75AA100ADB7CB /* Assets.xcassets */,
-				B9E863F324B75AA100ADB7CB /* LaunchScreen.storyboard */,
+				B977A0292530A019001C3031 /* fire.aiff */,
+				B9A27C752553194200B95D35 /* radar_timer.aiff */,
+				B9A27C762553194200B95D35 /* too_cold.aiff */,
+				B9A27C742553194200B95D35 /* too_hot.aiff */,
 				B9E863F624B75AA100ADB7CB /* Info.plist */,
 			);
 			path = tryAlamoFirePost;
@@ -181,8 +182,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9E863F524B75AA100ADB7CB /* LaunchScreen.storyboard in Resources */,
+				B9A27C772553194200B95D35 /* too_hot.aiff in Resources */,
+				B9A27C782553194200B95D35 /* radar_timer.aiff in Resources */,
 				B9E863F224B75AA100ADB7CB /* Assets.xcassets in Resources */,
 				B977A02A2530A01A001C3031 /* fire.aiff in Resources */,
+				B9A27C792553194200B95D35 /* too_cold.aiff in Resources */,
 				B9E863F024B75A9F00ADB7CB /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

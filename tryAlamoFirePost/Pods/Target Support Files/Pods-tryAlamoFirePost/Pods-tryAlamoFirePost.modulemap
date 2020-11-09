@@ -1,0 +1,6 @@
+framework module Pods_tryAlamoFirePost {
+  umbrella header "Pods-tryAlamoFirePost-umbrella.h"
+
+  export *
+  module * { export * }
+}

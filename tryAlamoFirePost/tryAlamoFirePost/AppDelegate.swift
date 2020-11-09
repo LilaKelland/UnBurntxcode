@@ -15,38 +15,34 @@ import SwiftyJSON
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     let cookingParameters = CookingParameters()
+    
+    
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UIApplication.shared.registerForRemoteNotifications()
-        UNUserNotificationCenter.current().delegate = self
+        UserNotifications.UNUserNotificationCenter.current().delegate = self
+        // changed to UserNotifications
+        // Define the custom actions.
+        let fireAction = UNNotificationAction(identifier: "FIRE",
+              title: "Actually on fire?",
+              options: UNNotificationActionOptions(rawValue: 0))
+        let noFireAction = UNNotificationAction(identifier: "NO_FIRE",
+              title: "Was not on fire.",
+              options: UNNotificationActionOptions(rawValue: 0))
+       
+        // Define the notification type
+        let wasThereFireCategory =
+              UNNotificationCategory(identifier: "WAS_THERE_FIRE",
+              actions: [fireAction, noFireAction],
+              intentIdentifiers: [],
+              hiddenPreviewsBodyPlaceholder: "",
+              options: .customDismissAction)
+        
+        // Register the notification type.
+        let notificationCenter = UNUserNotificationCenter.current() // is this in the wrong place?
+        notificationCenter.setNotificationCategories([wasThereFireCategory])
         return true
     }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                    willPresent notification: UNNotification,
-                                    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-         print("Push notification received in foreground.")
-         completionHandler([.alert, .sound, .badge])
-    }
-    
-//    func userNotificationCenter(_ center: UNUserNotificationCenter,
-//                                didReceive response: UNNotificationResponse,
-//                                withCompletionHandler completionHandler: @escaping () -> Void) {
-//        if response.notification.request.content.categoryIdentifier == "TIMER_EXPIRED" {
-//            // Handle the actions for the expired timer.
-//            if response.actionIdentifier == "SNOOZE_ACTION" {
-//                // Invalidate the old timer and create a new one. . .
-//            }
-//            else if response.actionIdentifier == "STOP_ACTION" {
-//                // Invalidate the timer. . .
-//            }
-//        }
-//
-        // Else handle actions for other notification types. . .
-//    }
-
-
-    // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
@@ -64,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
-    // Handle remote notification registration.
+    // Handle remote notification registration - device tokens.
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
        // self.sendDeviceTokenToServer(data:deviceToken)
@@ -98,7 +94,62 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     print(error)
                 }
             }
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+         print("Push notification received in foreground.")
+         completionHandler([.alert, .sound, .badge])
         
+        // Define the custom actions.
+        let fireAction = UNNotificationAction(identifier: "FIRE",
+              title: "Actually on fire?",
+              options: UNNotificationActionOptions(rawValue: 0))
+        let noFireAction = UNNotificationAction(identifier: "NO_FIRE",
+              title: "Was not on fire.",
+              options: UNNotificationActionOptions(rawValue: 0))
+       
+        // Define the notification type
+        let wasThereFireCategory =
+              UNNotificationCategory(identifier: "WAS_THERE_FIRE",
+              actions: [fireAction, noFireAction],
+              intentIdentifiers: [],
+              hiddenPreviewsBodyPlaceholder: "",
+              options: .customDismissAction)
+        
+        // Register the notification type.
+        let notificationCenter = UNUserNotificationCenter.current() // is this in the wrong place?
+        notificationCenter.setNotificationCategories([wasThereFireCategory])
+        
+    }
+ 
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+           didReceive response: UNNotificationResponse,
+           withCompletionHandler completionHandler:
+             @escaping () -> Void) {
+       
+//       // Get (and assign) ID from the original notification. - when ready to handle data
+            
+       // Perform the task associated with the action.
+       switch response.actionIdentifier {
+       case "FIRE":
+          print("it was on fire")
+        // gather time, and parameters when was on fire
+          break
+            
+       case "NO_FIRE":
+         print ("false alarm")
+        //gather time and parameters when false alarm
+          break
+            
+       // Handle other actions…
+     
+       default:
+          break
+       }
+        
+       // Always call the completion handler when done.
+       completionHandler()
     }
 
 }

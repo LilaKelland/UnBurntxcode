@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ROOT_URL</key>
-	<string>http://192.168.7.87:8080</string>
+	<string>http://192.168.7.45:8080</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.17</string>
+	<string>1.22</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>

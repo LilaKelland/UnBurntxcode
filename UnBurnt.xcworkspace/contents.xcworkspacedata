@@ -2,12 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/lilakelland/Desktop/code/UnBurntxcode/warAppGame/tryoutAlamoFire/UnBurnt/UnBurnt.xcodeproj">
+      location = "group:UnBurnt.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:UnBurnt.xcodeproj">
    </FileRef>
 </Workspace>

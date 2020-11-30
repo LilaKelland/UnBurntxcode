@@ -32,6 +32,7 @@
 		B9021B3824C1F0D60067A2B9 /* ThirdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdViewController.swift; sourceTree = "<group>"; };
 		B977A0292530A019001C3031 /* fire.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = fire.aiff; sourceTree = "<group>"; };
 		B977A03325388253001C3031 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		B98BDB0F25754E2500435759 /* tryAlamoFirePost.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = tryAlamoFirePost.entitlements; sourceTree = SOURCE_ROOT; };
 		B99682AF24F00C61006B232A /* CookingParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingParameters.swift; sourceTree = "<group>"; };
 		B9A27C742553194200B95D35 /* too_hot.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = too_hot.aiff; sourceTree = "<group>"; };
 		B9A27C752553194200B95D35 /* radar_timer.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = radar_timer.aiff; sourceTree = "<group>"; };
@@ -46,7 +47,6 @@
 		B9E863F424B75AA100ADB7CB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B9E863F624B75AA100ADB7CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B9E863FD24B75ACB00ADB7CB /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
-		B9E8645D24C08DBC00ADB7CB /* tryAlamoFirePost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tryAlamoFirePost.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +83,7 @@
 		B9E863E524B75A9F00ADB7CB /* UnBurnt */ = {
 			isa = PBXGroup;
 			children = (
-				B9E8645D24C08DBC00ADB7CB /* tryAlamoFirePost.entitlements */,
+				B98BDB0F25754E2500435759 /* tryAlamoFirePost.entitlements */,
 				B9E863E624B75A9F00ADB7CB /* AppDelegate.swift */,
 				B977A03325388253001C3031 /* Environment.swift */,
 				B9E863E824B75A9F00ADB7CB /* SceneDelegate.swift */,

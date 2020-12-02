@@ -450,12 +450,17 @@ class SecondViewController: UIViewController {
         }
     }
 
-    func subscribeToNotifications() {
-            let userNotificationCenter = UNUserNotificationCenter.current()
-        userNotificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
-                print("Permission granted: \(granted)")
-            }
+    func getNotificationSettings() {
+      UNUserNotificationCenter.current().getNotificationSettings { settings in
+        print("Notification settings: \(settings)")
+        guard settings.authorizationStatus == .authorized else { return }
+        DispatchQueue.main.async {
+          UIApplication.shared.registerForRemoteNotifications() // will need this in the main thread - to kick off registration of APNS
+        }
+      }
     }
+        
+ 
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -463,7 +468,7 @@ class SecondViewController: UIViewController {
             self.gaugeView.backgroundColor = .systemGray2
             self.view.addSubview(gaugeView)
 
-            subscribeToNotifications()
+            //subscribeToNotifications()
             runUpdates()
     }
     

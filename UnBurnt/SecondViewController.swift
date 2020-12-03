@@ -23,6 +23,7 @@ struct WebData:Decodable{
     let is_tempf2_valid: Bool
     let timeElapsed: String
     let checkTimer: String
+    let timeNow: Int
     let timeStamp: String
 }
 
@@ -317,7 +318,7 @@ class SecondViewController: UIViewController {
     }
     
     @objc func updateDisplay() {
-        getData()
+        syncronizeData()
     }
     
     func timeString(time:TimeInterval) -> String {
@@ -327,7 +328,12 @@ class SecondViewController: UIViewController {
         return (String(format: "%02d:%02d:%02d", hours, minutes, seconds))
     }
     
-    func getData() { ///still a bit funny - need to stop slight delay when checking server for updates, and subsequent jump forward to catch up
+    var currentTime: Int = Int(NSDate().timeIntervalSince1970)
+    var serversTimeNow: Int = 0
+    var cookingState: String = "cold"
+    
+    func syncronizeData() { ///still a bit funny - need to stop slight delay when checking server for updates, and subsequent jump forward to catch up
+
         if ((self.tempf1Valid == false) && (self.tempf2Valid == false)){
             print("sensor lost")
 //            self.timeElapsed.text = "sensor connection lost"
@@ -338,14 +344,24 @@ class SecondViewController: UIViewController {
             self.counter += 1
             self.timeElapsedInSeconds += 1
             self.timerCountdownInSeconds -= 1
-            self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
-            self.timerCountdown.text = self.timeString(time: TimeInterval(self.timerCountdownInSeconds))
+            print("current time \(currentTime)")
+            print("Server now time \(self.serversTimeNow)")
+            print(currentTime - self.serversTimeNow)
+            if ((currentTime - self.serversTimeNow) > 7) || (self.cookingState == "cold") { 
+                self.timeElapsed.text = self.timeString(time: TimeInterval(0))
+                self.timerCountdown.text = self.timeString(time: TimeInterval(0))
+            } else {
+                self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
+                self.timerCountdown.text = self.timeString(time: TimeInterval(self.timerCountdownInSeconds))
+            }
         } else {
             self.counter = 0
+            currentTime = Int(NSDate().timeIntervalSince1970)
             getTempTime()
-            getCookingState()
+            setTempDisplayColours()
         }
     }
+
     
     func getTempTime() {
         AF.request("\(Environment.url_string)/getTempTime").responseData { response in
@@ -363,6 +379,9 @@ class SecondViewController: UIViewController {
                                         print(webData.tempf2)
                                     }
                                 }
+                        // need a self.guageView.timeNow = webData.timeNow
+                        self.serversTimeNow = webData.timeNow
+                        
                         if webData.timeElapsed.isInt == false {
                             self.timeElapsed.text = webData.timeElapsed
                         } else if Int(webData.timeElapsed)! >= self.timeElapsedInSeconds {
@@ -401,38 +420,55 @@ class SecondViewController: UIViewController {
         }
     }
     
-//  sets UI colours based on cooking state and whether or not sensor is actually working
-    func getCookingState(){
+    func setTempDisplayColours(){
+        var highTempLimit: String! = "700"
+        var lowTempLimit: String! = "30"
+        highTempLimit = cookingParameters.getHighTempCookingParameter()
+        lowTempLimit = cookingParameters.getLowTempCookingParameter()
          AF.request("\(Environment.url_string)/getState").responseData
-            { response in
+         { [self] response in
              switch response.result {
                  case .failure(let error):
                      print(error)
                  case .success(let sdata):
                      do {
                         let stateData = try JSONDecoder().decode(StateData.self, from: sdata)
+                        self.cookingState = stateData.state
+                        print("cooking state \(self.cookingState)")
                         var label1color: UIColor = UIColor.systemBlue
                         var label2color: UIColor = UIColor.systemBlue
                         var insideGuageColor: UIColor = UIColor.systemGray4
                         
-                        if stateData.state == "cold" {
+                        print("low temp limit \(String(describing: Int(lowTempLimit)))")
+                        print("high temp limit \(String(describing: Int(highTempLimit)))")
+                        
+                        if self.gaugeView.valueL < Int(lowTempLimit)! {
                             label1color = UIColor.systemBlue
-                            label2color = UIColor.systemBlue
                             insideGuageColor = UIColor.systemGray4
-                            
-                        } else if stateData.state == "cooking" {
+                        } else if ((stateData.state == "cooking") && (self.gaugeView.valueL > Int(highTempLimit)!)) {
+                            label1color = UIColor.systemRed
+                            insideGuageColor = UIColor.systemGray4
+                        } else if self.tempf1Valid  {
                             label1color = UIColor.systemOrange
-                            label2color = UIColor.systemOrange
                             insideGuageColor = UIColor.systemGray4
-                   
-                        } else if stateData.state == "burning" {
-                            label1color = .darkGray
-                            label2color = .darkGray
-                            insideGuageColor = UIColor.systemRed
                         }
+                    // for the right side
+                        if self.gaugeView.valueR < Int(lowTempLimit)! {
+                            label2color = UIColor.systemBlue
+                        } else if ((stateData.state == "cooking") && (self.gaugeView.valueR > Int(highTempLimit)!)) {
+                            label2color = UIColor.systemRed
+                        } else if self.tempf2Valid {
+                            label2color = UIColor.systemOrange
+                        }
+                     
+                        if stateData.state == "burning" {
+                             label1color = .darkGray
+                             label2color = .darkGray
+                             insideGuageColor = UIColor.systemRed
+                        }
+                        
                         if self.tempf1Valid == false {
                             label1color = UIColor.systemGray
-                 
                         }
                         if self.tempf2Valid == false {
                             label2color = UIColor.systemGray

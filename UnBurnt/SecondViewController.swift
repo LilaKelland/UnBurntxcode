@@ -32,7 +32,7 @@ struct StateData:Decodable{
     let state: String
 }
 
-//-------------------code below (between"-----") only very slightly modified from indicated refrerence
+//-------------------code between"-----" (below to next set of dashes) only very slightly modified from indicated refrerence
 
 class GaugeView: UIView{
     //https://www.hackingwithswift.com/articles/150/how-to-create-a-custom-gauge-control-using-uikit
@@ -72,7 +72,7 @@ class GaugeView: UIView{
     let valueLabelL = UILabel()
     let valueLabelR = UILabel()
     var valueFont = UIFont.systemFont(ofSize: 30)
-
+    
     
     func drawBackground(in rect: CGRect, context ctx: CGContext) {
         // draw the outer bezel as the largest circle
@@ -226,8 +226,10 @@ class GaugeView: UIView{
         
         valueLabelL.font = valueFont
         valueLabelR.font = valueFont
-        valueLabelL.text = ""
-        valueLabelR.text = ""
+        valueLabelL.textColor = UIColor.systemGray
+        valueLabelR.textColor = UIColor.systemGray
+        valueLabelL.text = "N/A"
+        valueLabelR.text = "N/A"
         valueLabelL.translatesAutoresizingMaskIntoConstraints = false
         valueLabelR.translatesAutoresizingMaskIntoConstraints = false
         addSubview(valueLabelL)
@@ -242,52 +244,13 @@ class GaugeView: UIView{
         ])
     }
     
-    var tempDisplayValueL: String = "N/A"
-    var tempDisplayValueR: String = "N/A"
     var needlePosition: CGFloat = 0
-    var needleTemp: CGFloat = 0.0001
     
-    
-    
-    var valueL: Int = 0 {
+    var needleTemp: CGFloat = 0.0001 {
         didSet {
-            //self.valueLabelL.text = tempDisplayValueL
-            
-//            // update the value label to show the exact number
-//            var currentTime: Int = Int(NSDate().timeIntervalSince1970)
-//            print ("current time \(currentTime)")
-//            print("server time \(self.serversTimeNow)")
-//            if ((self.tempf1Valid == true) && ((currentTime - self.serversTimeNow) < 30)){
-//                valueLabelL.text = String(valueL)
-//
-//            } else {
-//                print("value L \(valueL)")
-//                valueLabelL.text = "N/A"
-//            }
-        }
-    }
-    
-    var valueR: Int = 0 {
-        didSet {
-            //self.valueLabelR.text = tempDisplayValueR
             needlePosition =  self.needleTemp / 800.0
             print (self.needleTemp)
             
-            // update the value label to show the exact number
-//            var needlePosition: CGFloat = 0
-//            if ((self.tempf2Valid == true) && ((Int(NSDate().timeIntervalSince1970) - self.serversTimeNow) < 7)){
-//                valueLabelR.text = String(valueR)
-//                needlePosition = CGFloat(valueR)/800.0
-//                print("valueR needle position \(needlePosition)")
-//                print("valueR \(valueR)")
-//                print("valueR needle position \(needlePosition)")
-//            } else {
-//                valueLabelR.text = "N/A"
-//                print("valueL \(valueL)")
-//                needlePosition =  CGFloat(valueL) / 800.0
-//                print("valueL needle position \(needlePosition)")
-//            }
-
             // create a lerp from the start angle (rotation) through to the end angle (rotation + totalAngle)
             let lerpFrom = rotation
             let lerpTo = rotation + totalAngle
@@ -297,7 +260,7 @@ class GaugeView: UIView{
             needle.transform = CGAffineTransform(rotationAngle: deg2rad(needleRotation))
         }
     }
-  
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUp()
@@ -310,9 +273,6 @@ class GaugeView: UIView{
 }
 //-------------------------------------------------------------------------------- from reference above
 
-//class GaugeViewDataDisplay {
-//    var gaugeView: GaugeView!
-//}
 
 class SecondViewController: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -329,7 +289,6 @@ class SecondViewController: UIViewController {
     @IBOutlet var TempTimeView: UIView! // ditto
     
     var gaugeView: GaugeView!
-//    var gaugeViewDataDisplay: GaugeViewDataDisplay!
     var timer = Timer()
     var tempf1Valid: Bool = false
     var tempf2Valid: Bool = false
@@ -337,6 +296,10 @@ class SecondViewController: UIViewController {
     var tempf2: Int = 0
     var timeElapsedInSeconds: Int = 0
     var timerCountdownInSeconds: Int = 0
+    var webTimeElapsed: String = ""
+    var webCheckTimer: String = ""
+    var webTimeStamp: String = ""
+    var needleTemp: CGFloat = 0.000001
     var counter: Int = 7
     var serversTimeNow: Int = 0
     var cookingState: String = "cold_off"
@@ -344,13 +307,11 @@ class SecondViewController: UIViewController {
 
     func runUpdates() {
          timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(SecondViewController.updateDisplay)), userInfo: nil, repeats: true)
-//        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(SecondViewController.syncronizeDataDisplayTimer())), userInfo: nil, repeats: true)
     }
     
     //***CAN I TAKE THIS OUT AND JUST SYNCRONIZE DATA?
     @objc func updateDisplay() {
         syncronizeDataDisplayTimers()
-        
     }
     
     func timeString(time:TimeInterval) -> String {
@@ -394,8 +355,10 @@ class SecondViewController: UIViewController {
         } else {
             self.counter = 0
             self.getTempTime()
-            self.setTempDisplayColours()
-            self.updateGaugeTempNeedleValue()
+            self.upDateTimeStampandTimerText()
+            self.setGaugeDisplayColours()
+            self.upDateGaugeNeedlePosition()
+            self.updateGaugeTempValues()
         }
     }
 
@@ -408,37 +371,18 @@ class SecondViewController: UIViewController {
                 case .success(let data):
                     do {
                         let webData = try JSONDecoder().decode(WebData.self, from: data)
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                                    UIView.animate(withDuration: 1) {
-//                                        self.gaugeView.valueL = (webData.tempf1)
-//                                        print(webData.tempf1)
-//                                        self.gaugeView.valueR = (webData.tempf2)
-//                                        print(webData.tempf2)
-//                                    }
-//                                }
+
                         self.serversTimeNow = webData.timeNow
                         self.tempf1 = webData.tempf1
                         self.tempf2 = webData.tempf2
                         self.tempf1Valid = webData.is_tempf1_valid
                         self.tempf2Valid = webData.is_tempf2_valid
-                        self.gaugeView.needleTemp = CGFloat(webData.combined_temp)
+                        self.webTimeElapsed = webData.timeElapsed
+                        self.webCheckTimer = webData.checkTimer
+                        self.webTimeStamp = webData.timeStamp
+                        self.needleTemp = CGFloat(webData.combined_temp)
                         print("needleTemp \(self.gaugeView.needleTemp)")
-                        //**NEED NEEDLE TEMP!!
-                        //**CHECK FOR ERROR _ READ ERROR AND DEAL WITH
-                        if (self.isServerUpToDate()){
-                    
-                            if (webData.timeElapsed.isInt == true) && (Int(webData.timeElapsed)! >= self.timeElapsedInSeconds) {
-                                self.timeElapsedInSeconds = Int(webData.timeElapsed)!
-                                self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
-                            }
-                            if (webData.checkTimer.isInt == true) && (Int(webData.checkTimer)! >= self.timerCountdownInSeconds) {
-                                self.timerCountdownInSeconds = Int(webData.checkTimer)!
-                                self.timerCountdown.text = self.timeString(time: TimeInterval(self.timerCountdownInSeconds))
-                            }
-                        }
-                        self.tempTimestamp.text = (webData.timeStamp)
-//                        self.setTempDisplayColours()
-
+//                        Add in exception handling when passed from python
                 } catch let error {
                     print(error)
                 }
@@ -446,119 +390,158 @@ class SecondViewController: UIViewController {
         }
     }
     
-    func setTempDisplayColours(){
-        var highTempLimit: String! = "700"
+    func upDateTimeStampandTimerText(){
+        if (self.isServerUpToDate()){
+            self.setTimerCountDownText()
+            self.setTimeElapsedText()
+        }
+        self.tempTimestamp.text = self.webTimeStamp
+    }
+    
+    func setTimeElapsedText() {
+        if self.cookingState == "cold_off" {
+            self.timeElapsedInSeconds = 0
+        } else if (self.webTimeElapsed.isInt == true) && (Int(self.webTimeElapsed)! >= self.timeElapsedInSeconds) {
+                self.timeElapsedInSeconds = Int(self.webTimeElapsed)!
+        }
+        self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
+    }
+    
+    func setTimerCountDownText() {
+        if (self.webCheckTimer.isInt == true) && (Int(self.webCheckTimer)! >= self.timerCountdownInSeconds) {
+            self.timerCountdownInSeconds = Int(self.webCheckTimer)!
+            self.timerCountdown.text = self.timeString(time: TimeInterval(self.timerCountdownInSeconds))
+        }
+    }
+    
+    func getLowTempLimit()  -> String {
         var lowTempLimit: String! = "30"
-
-        highTempLimit = cookingParameters.getHighTempCookingParameter()
         lowTempLimit = cookingParameters.getLowTempCookingParameter()
-         AF.request("\(Environment.url_string)/getState").responseData
-         { [self] response in
-             switch response.result {
-                 case .failure(let error):
-                     print(error)
-                 case .success(let sdata):
-                     do {
-                        let stateData = try JSONDecoder().decode(StateData.self, from: sdata)
-                        self.cookingState = stateData.state
+        return(lowTempLimit)
+    }
+    
+    func getHighTempLimit()  -> String {
+        var highTempLimit: String! = "700"
+        highTempLimit = cookingParameters.getHighTempCookingParameter()
+        return(highTempLimit)
+    }
+    
+    func getCookingState(){
+        AF.request("\(Environment.url_string)/getState").responseData { [self] response in
+            switch response.result {
+                case .failure(let error):
+                    print(error)
+                case .success(let sdata):
+                    do {
+                       let stateData = try JSONDecoder().decode(StateData.self, from: sdata)
+                       self.cookingState = stateData.state
+
+                       print("cooking state \(self.cookingState)")
                         
-                        print("cooking state \(self.cookingState)")
-                        
-                        var label1color: UIColor = UIColor.systemBlue
-                        var label2color: UIColor = UIColor.systemBlue
-                        var insideGuageColor: UIColor = UIColor.systemGray4
-                        
-                        print("low temp limit \(String(describing: Int(lowTempLimit)))")
-                        print("high temp limit \(String(describing: Int(highTempLimit)))")
-                        
-                        if isServerUpToDate() {
-                            if ((self.cookingState == "cold_off") || ((tempf1Valid == false) && (tempf2Valid == false))){
-                                label1color = UIColor.systemBlue
-                                label2color = UIColor.systemBlue
-                                insideGuageColor = UIColor.systemGray4
-                            }
-                            
-                            if (self.cookingState == "burning") {
-                                 label1color = .darkGray
-                                 label2color = .darkGray
-                                 insideGuageColor = UIColor.systemRed
-                            }
-                            
-                            if (self.cookingState.hasPrefix("cooking")) {
-                                    
-                                if self.tempf1Valid {
-                                    if (self.tempf1 <= Int(lowTempLimit)!) {
-                                        label1color = UIColor.systemBlue
-                                        insideGuageColor = UIColor.systemGray4
-                                    } else if (self.tempf1 >= Int(highTempLimit)!) {
-                                        label1color = UIColor.systemRed
-                                        insideGuageColor = UIColor.systemGray4
-                                    } else {
-                                        label1color = UIColor.systemOrange
-                                        insideGuageColor = UIColor.systemGray4
-                                    }
-                                } else {
-                                        label1color = UIColor.systemGray
-                                }
-                                
-                                
-                                if self.tempf2Valid {
-                                    if (self.tempf2 <= Int(lowTempLimit)!) {
-                                        label2color = UIColor.systemBlue
-                                    } else if (self.tempf2 >= Int(highTempLimit)!) {
-                                        label2color = UIColor.systemRed
-                                    } else  {
-                                        label2color = UIColor.systemOrange
-                                    }
-                                } else {
-                                    label2color = UIColor.systemGray
-                                }
-                            }
-                            
-                        } else {
-                               label1color = UIColor.systemGray
-                               label2color = UIColor.systemGray
-                               insideGuageColor = UIColor.systemGray4
-                        }
-                        
-                    
-                        self.gaugeView.valueLabelL.textColor = label1color
-                        self.gaugeView.valueLabelR.textColor = label2color
-                        self.gaugeView.insideColor = insideGuageColor
-                        self.gaugeView.setNeedsDisplay()
-                    
-                     } catch let error {
-                        print(error)
-                    }
+                } catch let error {
+                   print(error)
+               }
             }
         }
     }
     
-
-    func updateGaugeTempNeedleValue() {
-       
+    func setGaugeDisplayColours(){
+        var lowTempLimit: String
+        var highTempLimit: String
+        
+        var label1color: UIColor = UIColor.systemBlue
+        var label2color: UIColor = UIColor.systemBlue
+        var insideGuageColor: UIColor = UIColor.systemGray4
+        
+        lowTempLimit = getLowTempLimit()
+        highTempLimit = getHighTempLimit()
+        getCookingState()
+        
+        print("low temp limit \(String(describing: Int(lowTempLimit)))")
+        print("high temp limit \(String(describing: Int(highTempLimit)))")
+        
+        if isServerUpToDate() {
+            if ((self.cookingState == "cold_off") || ((self.tempf1Valid == false) && (self.tempf2Valid == false))){
+                label1color = UIColor.systemBlue
+                label2color = UIColor.systemBlue
+                insideGuageColor = UIColor.systemGray4
+            }
+            
+            if (self.cookingState == "burning") {
+                 label1color = .darkGray
+                 label2color = .darkGray
+                 insideGuageColor = UIColor.systemRed
+            }
+            
+            if (self.cookingState.hasPrefix("cooking")) {
+                    
+                if self.tempf1Valid {
+                    if (self.tempf1 <= Int(lowTempLimit)!) {
+                        label1color = UIColor.systemBlue
+                        insideGuageColor = UIColor.systemGray4
+                    } else if (self.tempf1 >= Int(highTempLimit)!) {
+                        label1color = UIColor.systemRed
+                        insideGuageColor = UIColor.systemGray4
+                    } else {
+                        label1color = UIColor.systemOrange
+                        insideGuageColor = UIColor.systemGray4
+                    }
+                } else {
+                        label1color = UIColor.systemGray
+                }
+                
+                if self.tempf2Valid {
+                    if (self.tempf2 <= Int(lowTempLimit)!) {
+                        label2color = UIColor.systemBlue
+                    } else if (self.tempf2 >= Int(highTempLimit)!) {
+                        label2color = UIColor.systemRed
+                    } else  {
+                        label2color = UIColor.systemOrange
+                    }
+                } else {
+                    label2color = UIColor.systemGray
+                }
+            }
+            
+        } else {
+               label1color = UIColor.systemGray
+               label2color = UIColor.systemGray
+               insideGuageColor = UIColor.systemGray4
+        }
+    
+        self.gaugeView.valueLabelL.textColor = label1color
+        self.gaugeView.valueLabelR.textColor = label2color
+        self.gaugeView.insideColor = insideGuageColor
+        self.gaugeView.setNeedsDisplay()
+    }
+    
+    func upDateGaugeNeedlePosition(){
+        if isServerUpToDate() == false {
+            self.gaugeView.needleTemp = 0.001
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                UIView.animate(withDuration: 1) {
+                    self.gaugeView.needleTemp = self.needleTemp
+                }
+            }
+        }
+    }
+    
+    func updateGaugeTempValues() {
             if ((self.tempf1Valid == true) && (isServerUpToDate())) {
                 self.gaugeView.valueLabelL.text = String(self.tempf1)
-                self.gaugeView.valueL = Int(self.tempf1)
-                print("valueL: \(self.gaugeView.valueL)")
             } else {
                 self.gaugeView.valueLabelL.text = "N/A"
             }
         
             if ((self.tempf2Valid == true) && (isServerUpToDate())) {
                 self.gaugeView.valueLabelR.text = String(self.tempf2)
-                self.gaugeView.valueR = Int(self.tempf2)
-                print("valueR: \(self.gaugeView.valueR)")
             } else {
                 self.gaugeView.valueLabelR.text = "N/A"
             }
-        
-        if isServerUpToDate() == false {
-            self.gaugeView.needleTemp = 0.001
-        }
-
     }
 
+    
     func getNotificationSettings() {
       UNUserNotificationCenter.current().getNotificationSettings { settings in
         print("Notification settings: \(settings)")

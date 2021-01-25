@@ -309,7 +309,7 @@ class SecondViewController: UIViewController {
          timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(SecondViewController.updateDisplay)), userInfo: nil, repeats: true)
     }
     
-    //***CAN I TAKE THIS OUT AND JUST SYNCRONIZE DATA?
+//**
     @objc func updateDisplay() {
         syncronizeDataDisplayTimers()
     }
@@ -339,7 +339,9 @@ class SecondViewController: UIViewController {
         
         if counter < 6 {
             self.counter += 1
-            self.timeElapsedInSeconds += 1
+            if self.timeElapsedInSeconds > 7 {
+                self.timeElapsedInSeconds += 1
+            }
             if self.timerCountdownInSeconds > 0 {
                 self.timerCountdownInSeconds -= 1
             }
@@ -399,12 +401,10 @@ class SecondViewController: UIViewController {
     }
     
     func setTimeElapsedText() {
-        if self.cookingState == "cold_off" {
-            self.timeElapsedInSeconds = 0
-        } else if (self.webTimeElapsed.isInt == true) && (Int(self.webTimeElapsed)! >= self.timeElapsedInSeconds) {
+        if (self.webTimeElapsed.isInt == true) && (Int(self.webTimeElapsed)! >= self.timeElapsedInSeconds) {
                 self.timeElapsedInSeconds = Int(self.webTimeElapsed)!
+                self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
         }
-        self.timeElapsed.text = self.timeString(time: TimeInterval(self.timeElapsedInSeconds))
     }
     
     func setTimerCountDownText() {
